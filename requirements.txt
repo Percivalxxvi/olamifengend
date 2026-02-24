@@ -2,7 +2,6 @@ fastapi
 pydantic
 uvicorn
 motor
-bson
 astrapy
 datetime
 uvicorn
