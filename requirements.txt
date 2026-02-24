@@ -1,4 +1,5 @@
 fastapi
+<<<<<<< HEAD
 pydantic
 uvicorn
 motor
@@ -6,3 +7,6 @@ bson
 astrpy
 datetime
 os
+=======
+uvicorn
+>>>>>>> 9d2f39d01601878d8146aeceb5b7925f1d9e1567
