@@ -1,0 +1,8 @@
+fastapi
+pydantic
+uvicorn
+motor
+bson
+astrpy
+datetime
+os
