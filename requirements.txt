@@ -6,4 +6,5 @@ astrapy
 datetime
 uvicorn
 pydantic[email]
+dotenv
 
