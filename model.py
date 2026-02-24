@@ -16,5 +16,5 @@ class Post(BaseModel):
     title: str
     body: str
     author_id: str
+    featured: Optional[bool] = False
 
-    
