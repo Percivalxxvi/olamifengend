@@ -1,5 +1,5 @@
 # import email
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
 from fastapi.responses import JSONResponse
 from model import User,Login,Post
 import os
@@ -239,3 +239,19 @@ def get_post(id: str):
     if post:
         return {"post": post}
     return {"message": "Post not found"}, 404
+
+@app.put("/toggle_featured/{post_id}")
+def toggle_featured(post_id: str):
+    post = news_collection.find_one({"_id": post_id})
+
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    new_value = not post.get("featured", False)
+
+    news_collection.update_one(
+        {"_id": post_id},
+        {"$set": {"featured": new_value}}
+    )
+
+    return {"message": "Updated", "featured": new_value}
