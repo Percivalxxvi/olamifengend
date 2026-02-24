@@ -3,7 +3,7 @@ pydantic
 uvicorn
 motor
 bson
-astrpy
+astrapy
 datetime
 os
 uvicorn
