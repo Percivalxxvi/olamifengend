@@ -1,4 +1,4 @@
-import email
+# import email
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
 from model import User,Login,Post
