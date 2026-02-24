@@ -5,4 +5,5 @@ motor
 astrapy
 datetime
 uvicorn
+pydantic[email]
 
