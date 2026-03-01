@@ -255,3 +255,13 @@ def toggle_featured(post_id: str):
     )
 
     return {"message": "Updated", "featured": new_value}
+
+app.get("/ping-db", async (req, res) => {
+  try {
+    const collection = db.collection("users");
+    await collection.findOne({});
+    res.send("Database is awake");
+  } catch (err) {
+    res.status(500).send("Error");
+  }
+});
