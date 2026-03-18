@@ -113,42 +113,6 @@ def verify_user(token:str):
         return JSONResponse(content={"message":"user verified","user":data},status_code=status.HTTP_200_OK)
     return JSONResponse(content={"message":"user not found"},status_code=status.HTTP_404_NOT_FOUND)
 
-# @app.post("/login")
-# async def login_user(login:Login):
-#     data=dict(login)
-#     user=user_collection.find_one({"email":data["email"]})
-#     if user:
-#         try:
-#             if verifyHashed(user["password"],data["password"]):
-#                 otp = generate_otp()
-#                 user=user_collection.find_one_and_update({"email":data["email"]}, {"$set": {"otp": otp}})
-#                 send_email(user["email"],"OTP Verification",f"Your OTP code is: {otp}")
-#                 return JSONResponse(content={"message":"login successful","user_id":user["_id"]},status_code=status.HTTP_200_OK) 
-#         except:
-#             return JSONResponse(content={"message":"invalid password"},status_code=status.HTTP_401_UNAUTHORIZED) 
-#     return JSONResponse(content={"message":"user not found"},status_code=status.HTTP_404_NOT_FOUND)
-
-# @app.post("/login")
-# async def login_user(login: Login):
-#     data = dict(login)
-#     user = user_collection.find_one({"email": data["email"]})
-#     if not user:
-#         return JSONResponse({"message": "user not found"}, status_code=404)
-    
-#     if not verifyHashed(user["password"], data["password"]):
-#         return JSONResponse({"message": "invalid password"}, status_code=401)
-
-#     otp = generate_otp()
-#     user_collection.find_one_and_update({"email": data["email"]}, {"$set": {"otp": otp}})
-    
-#     try:
-#         send_email(user["email"], "OTP Verification", f"Your OTP code is: {otp}")
-#     except Exception as e:
-#         print("Failed to send OTP:", e)
-#         return JSONResponse({"message": "failed to send OTP"}, status_code=500)
-
-#     return JSONResponse({"message": "login successful", "user_id": user["_id"]}, status_code=200)
-
 @app.post("/login")
 async def login_simple(login: Login):
     data = dict(login)
@@ -256,12 +220,29 @@ def toggle_featured(post_id: str):
 
     return {"message": "Updated", "featured": new_value}
 
-app.get("/ping-db", async (req, res) => {
-  try {
-    const collection = db.collection("users");
-    await collection.findOne({});
-    res.send("Database is awake");
-  } catch (err) {
-    res.status(500).send("Error");
-  }
-});
+import threading
+import time
+import requests
+
+def keep_alive():
+    while True:
+        time.sleep(20 * 60 * 60)  # 20 hours
+        try:
+            # Ping your own API to keep Astra active
+            requests.get("https://olamifengbackend3.onrender.com/ping", timeout=10)
+            print("Keep-alive ping sent")
+        except Exception as e:
+            print("Keep-alive error:", e)
+
+@app.get("/ping", tags=["Health"])
+async def ping():
+    # Touches the database so Astra registers activity
+    user_collection.find_one({})
+    return {"status": "ok"}
+
+# Start keep-alive thread when app starts
+@app.on_event("startup")
+async def startup_event():
+    thread = threading.Thread(target=keep_alive, daemon=True)
+    thread.start()
+    print("Keep-alive thread started")
